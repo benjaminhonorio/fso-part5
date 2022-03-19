@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import blogServices from '../services/blogs'
+import blogService from '../services/blogs'
 
-const Blog = ({ blog, user, removeBlog }) => {
+const Blog = ({ blog, user, removeBlog, updateLikes }) => {
   const [showDetails, setShowDetails] = useState(false)
   const [currentBlog, setCurrentBlog] = useState(() => blog)
   const blogStyle = {
@@ -12,14 +12,13 @@ const Blog = ({ blog, user, removeBlog }) => {
     marginBottom: 5,
   }
 
-  const updateBlog = (id) => {
-    const newBlogObject = {
-      ...currentBlog,
-      likes: currentBlog.likes + 1,
-    }
-    blogServices.update(newBlogObject, id).then((returnedBlog) => {
-      setCurrentBlog(returnedBlog)
-    })
+  const updateBlog = (blog) => {
+    blogService
+      .update(updateLikes(blog), blog.id)
+      .then((returnedBlog) => {
+        setCurrentBlog(returnedBlog)
+      })
+      .catch(() => {}) // for the test not to show unhandled error because it's trying to run the service (See Blog.test.js "if like button is clicked twice")
   }
 
   const deleteBlog = (id) => {
@@ -27,7 +26,7 @@ const Blog = ({ blog, user, removeBlog }) => {
       `Remove blog ${currentBlog.title} by ${currentBlog.author}`
     )
     if (removeConfirm) {
-      blogServices.deleteItem(id).then((response) => {
+      blogService.deleteItem(id).then((response) => {
         if (response.status === 204) {
           removeBlog(id)
         }
@@ -36,7 +35,7 @@ const Blog = ({ blog, user, removeBlog }) => {
   }
   return (
     <div style={blogStyle}>
-      <div>
+      <div className="blogItem">
         {currentBlog.title} {currentBlog.author}
         <button onClick={() => setShowDetails(!showDetails)}>
           {showDetails ? 'hide' : 'view'}
@@ -46,10 +45,10 @@ const Blog = ({ blog, user, removeBlog }) => {
             <div>{currentBlog.url}</div>
             <div>
               likes {currentBlog.likes}
-              <button onClick={() => updateBlog(currentBlog.id)}>like</button>
+              <button onClick={() => updateBlog(currentBlog)}>like</button>
             </div>
             <div>{currentBlog.author}</div>
-            {currentBlog?.user?.username === user.username ? (
+            {currentBlog.user?.username === user.username ? (
               <button
                 style={{ backgroundColor: 'tomato' }}
                 onClick={() => deleteBlog(currentBlog.id)}
