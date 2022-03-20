@@ -3,7 +3,7 @@ import blogService from '../services/blogs'
 
 const Blog = ({ blog, user, removeBlog, updateLikes }) => {
   const [showDetails, setShowDetails] = useState(false)
-  const [currentBlog, setCurrentBlog] = useState(() => blog)
+  const [currentBlog, setCurrentBlog] = useState(blog)
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -34,24 +34,26 @@ const Blog = ({ blog, user, removeBlog, updateLikes }) => {
     }
   }
   return (
-    <div style={blogStyle}>
+    <div className="blogContainer" style={blogStyle}>
       <div className="blogItem">
-        {currentBlog.title} {currentBlog.author}
+        {currentBlog?.title} {currentBlog?.author}
         <button onClick={() => setShowDetails(!showDetails)}>
           {showDetails ? 'hide' : 'view'}
         </button>
         {showDetails ? (
           <>
-            <div>{currentBlog.url}</div>
-            <div>
-              likes {currentBlog.likes}
-              <button onClick={() => updateBlog(currentBlog)}>like</button>
+            <div>{currentBlog?.url}</div>
+            <div className="likes">
+              likes {currentBlog?.likes}
+              <button id="like-button" onClick={() => updateBlog(currentBlog)}>
+                like
+              </button>
             </div>
-            <div>{currentBlog.author}</div>
-            {currentBlog.user?.username === user.username ? (
+            <div>{currentBlog?.author}</div>
+            {currentBlog?.user?.username === user.username ? (
               <button
                 style={{ backgroundColor: 'tomato' }}
-                onClick={() => deleteBlog(currentBlog.id)}
+                onClick={() => deleteBlog(currentBlog?.id)}
               >
                 remove
               </button>

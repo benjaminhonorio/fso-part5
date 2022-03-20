@@ -63,7 +63,9 @@ const App = () => {
   const addNewBlog = (blogObject) => {
     blogFormRef.current.toggleVisibility()
     blogService.create(blogObject).then((returnedBlog) => {
-      setBlogs(blogs.concat(returnedBlog))
+      setBlogs(
+        blogs.concat({ ...returnedBlog, user: { username: user.username } })
+      )
       setSuccesMessage(
         `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`
       )
@@ -96,6 +98,8 @@ const App = () => {
             <input
               type="text"
               onChange={({ target }) => setUsername(target.value)}
+              name="username"
+              id="username"
               value={username}
             />
           </div>
@@ -104,28 +108,28 @@ const App = () => {
             <input
               type="password"
               onChange={({ target }) => setPassword(target.value)}
+              name="password"
+              id="password"
               value={password}
             />
           </div>
-          <button>login</button>
+          <button id="login-button">login</button>
         </form>
       </div>
     )
   }
-
   return (
     <div>
       <h2>blogs</h2>
       <Notification message={succesMessage} />
       <p>
-        {user.username} loggeed in{' '}
-        <button onClick={handleLogout}>logout</button>
+        {user.username} logged in <button onClick={handleLogout}>logout</button>
       </p>
       <Togglable buttonLabel="create new blog" ref={blogFormRef}>
         <BlogForm createBlog={addNewBlog} />
       </Togglable>
       {blogs
-        .sort((a, b) => a.likes - b.likes)
+        .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
           <Blog
             key={blog.id}
